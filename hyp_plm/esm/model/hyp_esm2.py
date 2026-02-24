@@ -8,10 +8,16 @@ import torch
 import torch.nn as nn
 
 import esm
-from esm.modules import ContactPredictionHead, ESM1bLayerNorm, RobertaLMHead, TransformerLayer
+from esm.modules import ContactPredictionHead, ESM1bLayerNorm, RobertaLMHead, TransformerLayer, HypLMHead
+from ..hypercore.manifolds import Lorentz
 
+def project(manifold, x):
+    x_space = x
+    x_time = (((x_space ** 2).sum(dim=-1, keepdims=True) + manifold.c).clamp_min(1e-6)) ** 0.5
+    x = torch.cat([x_time, x_space], dim=-1)
+    return x
 
-class ESM2(nn.Module):
+class LorentzESM2(nn.Module):
     def __init__(
         self,
         num_layers: int = 33,
@@ -35,7 +41,8 @@ class ESM2(nn.Module):
         self.prepend_bos = alphabet.prepend_bos
         self.append_eos = alphabet.append_eos
         self.token_dropout = token_dropout
-
+        self.manifold = Lorentz(c=1.0)
+        
         self._init_submodules()
 
     def _init_submodules(self):
@@ -68,10 +75,10 @@ class ESM2(nn.Module):
         )
         self.emb_layer_norm_after = ESM1bLayerNorm(self.embed_dim)
 
-        self.lm_head = RobertaLMHead(
+        self.lm_head = HypLMHead(
+            self.manifold,
             embed_dim=self.embed_dim,
             output_dim=self.alphabet_size,
-            weight=self.embed_tokens.weight,
         )
 
     def forward(self, tokens, repr_layers=[], need_head_weights=False, return_contacts=False):
@@ -126,6 +133,7 @@ class ESM2(nn.Module):
         # last hidden representation should have layer norm applied
         if (layer_idx + 1) in repr_layers:
             hidden_representations[layer_idx + 1] = x
+        x = project(self.manifold, x)
         x = self.lm_head(x)
 
         result = {"logits": x, "representations": hidden_representations}
