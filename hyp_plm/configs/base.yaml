@@ -1,0 +1,24 @@
+# 训练配置（路径相对于此文件所在项目根目录 hyp_plm/）
+train:
+  # 模型类型：esm2（欧氏）或 lorentz_esm2（双曲 Lorentz）
+  model: esm2
+
+  # 1=单卡，8=八卡；由 test_train.sh 根据此值选择 python 或 torchrun
+  n_gpus: 1
+
+  fasta_file: uniref50/train.fasta
+  output_dir: output/debug
+
+  toks_per_batch: 4096
+  truncation_seq_length: 1022
+  repr_layers: [-1]
+
+  nogpu: false
+
+  # 验证集与 periodic eval（训练时只用 train + eval）
+  eval_fasta: uniref50/eval.fasta   # 设为 null 或留空则不跑 eval
+  eval_every: 500
+  eval_at_start: false
+
+  # 测试集（仅用于 evaluate_test.py 评测，不参与训练）
+  test_fasta: uniref50/test.fasta

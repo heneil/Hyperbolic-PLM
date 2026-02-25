@@ -1,0 +1,22 @@
+# 八卡训练 - ESM2（欧氏）
+train:
+  model: esm2
+  n_gpus: 8
+
+  fasta_file: uniref50/train.fasta
+  output_dir: output/debug_8gpu_esm2
+
+  toks_per_batch: 4096
+  truncation_seq_length: 1022
+  repr_layers: [-1]
+
+  nogpu: false
+
+  eval_fasta: uniref50/eval.fasta
+  eval_every: 500
+  eval_at_start: false
+  test_fasta: uniref50/test.fasta
+
+  # wandb（可选）
+  wandb_project: hyperbolic-plm
+  wandb_run_name: esm2_8gpu

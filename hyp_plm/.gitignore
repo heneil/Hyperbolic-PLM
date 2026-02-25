@@ -32,3 +32,4 @@ esm/dev
 
 output
 uniref50
+wandb

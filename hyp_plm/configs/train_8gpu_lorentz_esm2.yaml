@@ -1,0 +1,18 @@
+# 八卡训练 - LorentzESM2（双曲）
+train:
+  model: lorentz_esm2
+  n_gpus: 8
+
+  fasta_file: uniref50/train.fasta
+  output_dir: output/debug_8gpu_lorentz_esm2
+
+  toks_per_batch: 4096
+  truncation_seq_length: 1022
+  repr_layers: [-1]
+
+  nogpu: false
+
+  eval_fasta: uniref50/eval.fasta
+  eval_every: 500
+  eval_at_start: false
+  test_fasta: uniref50/test.fasta
