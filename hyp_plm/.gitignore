@@ -29,3 +29,6 @@ esm/dev
 *.swp
 *.log
 *~
+
+output
+uniref50
