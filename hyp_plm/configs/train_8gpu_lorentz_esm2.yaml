@@ -16,3 +16,10 @@ train:
   eval_every: 500
   eval_at_start: false
   test_fasta: uniref50/test.fasta
+
+  # 小数据集时多跑几轮（每卡每轮 4 batch 时，10 轮 = 40 step）
+  max_epochs: 100
+
+  # wandb（可选）
+  wandb_project: hyperbolic-plm
+  wandb_run_name: test_lorentz_esm2_8gpu
